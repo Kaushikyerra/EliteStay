@@ -1,15 +1,29 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+:root {
+  --elitestay-white: #FFFFFF;
+  --elitestay-beige: #F5F5DC;
+  --elitestay-gold: #D4AF37;
+  --elitestay-teal: #008080;
+  --elitestay-light-gold: #E6D2B5;
+}
 
 body {
   @apply font-sans text-gray-800 bg-white min-h-screen;
 }
 
-h1, h2, h3 {
-  @apply font-serif text-elitestay-teal;
+/* Helper classes for custom colors via CSS variables */
+.link-gold {
+  color: var(--elitestay-gold);
+  /* Tailwind's default transition for 'transition' class */
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.link-gold:hover {
+  color: var(--elitestay-teal);
 }
 
-a {
-  @apply text-elitestay-gold hover:text-elitestay-teal transition duration-300;
-} 
+.heading-teal {
+  color: var(--elitestay-teal);
+}
