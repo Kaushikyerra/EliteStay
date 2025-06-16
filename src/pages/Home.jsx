@@ -5,10 +5,10 @@ import hotelAnimation from '../assets/hotel-animation.json'; // You'll need to a
 
 function Home() {
   return (
-    <div className="min-h-screen bg-elitestay-white">
+    <div style={{ backgroundColor: 'var(--elitestay-white)' }} className="min-h-screen">
       <div className="container mx-auto px-4 py-16 grid md:grid-cols-2 items-center">
         <div>
-          <h1 className="text-5xl font-serif text-elitestay-teal mb-6">
+          <h1 className="text-5xl font-serif heading-teal mb-6">
             Discover Luxury at EliteStay
           </h1>
           <p className="text-xl text-gray-600 mb-8">
@@ -17,13 +17,14 @@ function Home() {
           <div className="flex space-x-4">
             <Link 
               to="/rooms" 
-              className="px-6 py-3 bg-elitestay-gold text-white rounded-lg hover:bg-elitestay-teal transition duration-300"
+              style={{ backgroundColor: 'var(--elitestay-gold)' }}
+              className="px-6 py-3 text-white rounded-lg hover:bg-[var(--elitestay-teal)] transition duration-300"
             >
               View Rooms
             </Link>
             <Link 
               to="/contact" 
-              className="px-6 py-3 border border-elitestay-teal text-elitestay-teal rounded-lg hover:bg-elitestay-teal hover:text-white transition duration-300"
+              className="px-6 py-3 border border-[var(--elitestay-gold)] link-gold rounded-lg transition duration-300"
             >
               Contact Us
             </Link>
