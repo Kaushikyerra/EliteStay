@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-# EliteStay
-=======
-# EliteStay - Luxury Hotel Landing Website
+# EliteStay# EliteStay - Luxury Hotel Landing Website
 
 ## 🏨 Project Overview
 EliteStay is a modern, responsive hotel landing website built with React.js, featuring Firebase authentication, smooth animations, and an elegant user interface.
