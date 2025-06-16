@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans text-gray-800 bg-white min-h-screen;
+}
+
+h1, h2, h3 {
+  @apply font-serif text-elitestay-teal;
+}
+
+a {
+  @apply text-elitestay-gold hover:text-elitestay-teal transition duration-300;
+} 
