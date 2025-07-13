@@ -1,15 +1,46 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+:root {
+  --elitestay-white: #FFFFFF;
+  --elitestay-beige: #F5F5DC;
+  --elitestay-gold: #D4AF37;
+  --elitestay-teal: #008080;
+  --elitestay-light-gold: #E6D2B5;
+}
 
 body {
   @apply font-sans text-gray-800 bg-white min-h-screen;
 }
 
-h1, h2, h3 {
-  @apply font-serif text-elitestay-teal;
+/* Helper class for headings */
+.heading-teal {
+  color: var(--elitestay-teal);
 }
 
-a {
-  @apply text-elitestay-gold hover:text-elitestay-teal transition duration-300;
-} 
+/* Helper class for links */
+.link-gold {
+  color: var(--elitestay-gold);
+  transition-property: color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.link-gold:hover {
+  color: var(--elitestay-teal);
+}
+
+.section-heading {
+  font-size: 2.25rem; /* text-4xl */
+  font-weight: 700;   /* font-bold */
+  text-align: center;
+  color: #181818;
+  margin-bottom: 0.5rem;
+}
+.section-underline {
+  margin-left: auto;
+  margin-right: auto;
+  width: 60px;
+  height: 3px;
+  border-radius: 9999px;
+  background: #FF8D41;
+  margin-bottom: 2rem;
+}

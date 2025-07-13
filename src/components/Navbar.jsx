@@ -1,69 +1,55 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { auth } from '../firebase/config';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [user] = useAuthState(auth);
+const navLinks = [
+  { to: '/', label: 'Home' },
+  { to: '/rooms', label: 'Rooms' },
+  { to: '/banquet', label: 'Banquet' },
+  { to: '/dining', label: 'Dining' },
+  { to: '/facilities', label: 'Facilities' },
+  { to: '/attractions', label: 'Attractions' },
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/contact', label: 'Contact' },
+];
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+const Navbar = ({ user }) => {
+  const navigate = useNavigate();
 
   return (
-    <nav className="bg-elitestay-white shadow-lg">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between">
-          <div className="flex space-x-7">
-            <Link to="/" className="flex items-center py-4 px-2">
-              <span className="font-serif text-2xl text-elitestay-gold">EliteStay</span>
-            </Link>
-            
-            <div className={`${isOpen ? 'block' : 'hidden'} md:flex md:items-center md:space-x-4`}>
-              <Link to="/" className="py-4 px-2 text-elitestay-teal hover:text-elitestay-gold transition duration-300">Home</Link>
-              <Link to="/about" className="py-4 px-2 text-elitestay-teal hover:text-elitestay-gold transition duration-300">About</Link>
-              <Link to="/rooms" className="py-4 px-2 text-elitestay-teal hover:text-elitestay-gold transition duration-300">Rooms</Link>
-              <Link to="/services" className="py-4 px-2 text-elitestay-teal hover:text-elitestay-gold transition duration-300">Services</Link>
-              <Link to="/contact" className="py-4 px-2 text-elitestay-teal hover:text-elitestay-gold transition duration-300">Contact</Link>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            {user ? (
-              <span className="text-elitestay-teal">Welcome, {user.displayName || user.email}</span>
-            ) : (
-              <Link 
-                to="/auth" 
-                className="py-2 px-4 bg-elitestay-gold text-white rounded hover:bg-elitestay-teal transition duration-300"
-              >
-                Login
-              </Link>
-            )}
-
-            <div className="md:hidden">
-              <button 
-                onClick={toggleMenu} 
-                className="outline-none mobile-menu-button"
-              >
-                <svg 
-                  className="w-6 h-6 text-elitestay-teal"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
+    <nav className="fixed top-0 left-0 w-full z-40 bg-white shadow-md py-3 px-6 flex items-center justify-between">
+      <div className="font-bold text-xl tracking-widest text-yellow-800 uppercase">
+        Hotel Imperia Blessings
       </div>
+      <div className="hidden md:flex gap-4 items-center">
+        {navLinks.map(link => (
+          <Link
+            key={link.label}
+            to={link.to}
+            className="text-gray-700 hover:text-yellow-700 font-medium transition-colors duration-200"
+          >
+            {link.label}
+          </Link>
+        ))}
+        <button className="px-4 py-2 bg-yellow-700 text-white rounded shadow hover:bg-yellow-800 transition font-semibold" style={{minWidth: '120px'}}>Book a Stay</button>
+        {!user ? (
+          <button
+            className="px-4 py-2 border border-yellow-700 text-yellow-700 rounded hover:bg-yellow-700 hover:text-white transition font-semibold"
+            onClick={() => navigate('/auth')}
+          >
+            Login/Signup
+          </button>
+        ) : (
+          <button
+            className="px-4 py-2 text-gray-700 hover:text-yellow-700 font-medium transition-colors duration-200 font-semibold bg-transparent border-none outline-none"
+            onClick={() => navigate('/profile')}
+          >
+            My Account
+          </button>
+        )}
+      </div>
+      {/* Mobile menu can be added here if needed */}
     </nav>
   );
-}
+};
 
 export default Navbar; 

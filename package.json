@@ -12,7 +12,12 @@
     "deploy:hosting": "firebase deploy --only hosting"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^7.3.1",
+    "aos": "^2.3.4",
     "firebase": "^10.7.1",
+    "firebase-phone-auth": "^1.0.0",
     "framer-motion": "^12.18.1",
     "lottie-react": "^2.4.0",
     "react": "^18.2.0",
@@ -20,6 +25,9 @@
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.49.2",
+    "react-icons": "^4.12.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-phone-number-input": "^3.4.12",
     "react-router-dom": "^7.6.2"
   },
   "devDependencies": {

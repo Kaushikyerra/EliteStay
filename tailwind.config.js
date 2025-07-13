@@ -7,19 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        'elitestay': {
-          white: '#FFFFFF',
-          beige: '#F5F5DC',
-          gold: '#D4AF37',
-          teal: '#008080',
-          'light-gold': '#E6D2B5'
-        }
+        'elitestay-white': 'var(--elitestay-white)',
+        'elitestay-beige': 'var(--elitestay-beige)',
+        'elitestay-gold': 'var(--elitestay-gold)',
+        'elitestay-teal': 'var(--elitestay-teal)',
+        'elitestay-light-gold': 'var(--elitestay-light-gold)',
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
-        sans: ['Roboto', 'ui-sans-serif', 'system-ui']
+        sans: ['Roboto', 'ui-sans-serif', 'system-ui'] // This defines 'font-sans'
       }
     },
   },
   plugins: [],
-} 
+}
