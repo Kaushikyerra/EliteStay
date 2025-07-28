@@ -1,5 +1,15 @@
 import React from 'react';
-import entranceImage from '../assets/Hotel Entrance.jpg';
+import eventPlace1 from '../assets/Event Place1.jpg';
+import dining1 from '../assets/Dining 1.jpg';
+import meetings from '../assets/meetings.jpg';
+import gardenRoom from '../assets/garden-room.jpg';
+
+const attractions = [
+  { src: eventPlace1, alt: 'Event Venue', label: 'Event Venue' },
+  { src: dining1, alt: 'Fine Dining', label: 'Fine Dining' },
+  { src: meetings, alt: 'Meeting Spaces', label: 'Meeting Spaces' },
+  { src: gardenRoom, alt: 'Garden Room', label: 'Garden Room' },
+];
 
 export default function AttractionsSection() {
   return (
@@ -8,22 +18,19 @@ export default function AttractionsSection() {
         <h2 className="section-heading">Attractions</h2>
         <div className="section-underline"></div>
       </div>
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 className="text-4xl font-serif text-elitestay-teal mb-6">
-            Explore Prayagraj
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Discover the best of Prayagraj with easy access to tourist spots, shopping, and cultural landmarks. Our central location puts the city at your doorstep.
-          </p>
-        </div>
-        <div>
-          <img 
-            src={entranceImage} 
-            alt="Attractions" 
-            className="rounded-lg shadow-lg w-full h-80 object-cover"
-          />
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        {attractions.map((item, idx) => (
+          <div key={idx} className="rounded-xl shadow-lg overflow-hidden bg-white">
+            <img
+              src={item.src}
+              alt={item.alt}
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4 text-center">
+              <span className="font-semibold text-elitestay-teal text-lg">{item.label}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

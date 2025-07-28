@@ -12,10 +12,6 @@ const amenities = [
   { icon: '🧺', title: 'Laundry (Chargeable)' },
   { icon: '🚌', title: 'Airport Shuttle (Chargeable)' },
   { icon: '🚫', title: 'Pet Friendly: No' },
-  { icon: '🏋️', title: 'Gym / Spa / Pool: N/A' },
-  { icon: '🍽️', title: 'Restaurant' },
-  { icon: '🍸', title: 'Bar & Lounge' },
-  { icon: '🛎️', title: 'Room Service' },
 ];
 
 export default function AmenitiesSection() {

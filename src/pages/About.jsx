@@ -3,8 +3,8 @@ import AboutSection from '../components/AboutSection';
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] flex items-center justify-center py-12">
-      <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-elitestay-beige via-elitestay-white to-elitestay-light-gold flex items-center justify-center py-16">
+      <div className="w-full max-w-5xl premium-card fade-in">
         <AboutSection />
       </div>
     </div>

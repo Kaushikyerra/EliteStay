@@ -15,17 +15,15 @@ export default function BanquetSection() {
           <h2 className="section-heading">Banquet & Conference Facilities</h2>
           <div className="section-underline"></div>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-16">
           {halls.map((hall, idx) => (
-            <div key={idx} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center text-center border hover:shadow-xl transition">
-              <div className="text-2xl font-bold text-elitestay-teal mb-2">{hall.name}</div>
-              <div className="mb-2 text-gray-700">Size: {hall.size}</div>
-              <div className="mb-2 text-gray-700">Capacity: {hall.capacity}</div>
-              <div className="mb-2 text-gray-700">Inclusions: {hall.inclusions}</div>
-              <div className="mb-2 text-gray-700">Ideal For: {hall.ideal}</div>
-              <div className="mb-2 text-gray-700">Catering/Decoration: {hall.catering}</div>
-              {/* Placeholder for photo */}
-              <div className="w-full h-32 bg-gray-100 rounded-lg mt-4 flex items-center justify-center text-gray-400">Photo</div>
+            <div key={idx} className="flex flex-col items-start text-left space-y-2">
+              <div className="text-2xl font-bold text-elitestay-teal mb-1">{hall.name}</div>
+              <div className="text-gray-700"><span className="font-semibold">Size:</span> {hall.size}</div>
+              <div className="text-gray-700"><span className="font-semibold">Capacity:</span> {hall.capacity}</div>
+              <div className="text-gray-700"><span className="font-semibold">Inclusions:</span> {hall.inclusions}</div>
+              <div className="text-gray-700"><span className="font-semibold">Ideal For:</span> {hall.ideal}</div>
+              <div className="text-gray-700"><span className="font-semibold">Catering/Decoration:</span> {hall.catering}</div>
             </div>
           ))}
         </div>

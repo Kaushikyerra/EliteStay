@@ -15,7 +15,8 @@ export default {
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
-        sans: ['Roboto', 'ui-sans-serif', 'system-ui'] // This defines 'font-sans'
+        sans: ['Roboto', 'ui-sans-serif', 'system-ui'],
+        display: ['Playfair Display', 'serif'],
       }
     },
   },

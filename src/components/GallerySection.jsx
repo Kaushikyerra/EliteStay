@@ -1,5 +1,18 @@
 import React from 'react';
-import galleryImage from '../assets/garden-room.jpg';
+import dining from '../assets/Dining.jpg';
+import spa from '../assets/Spa.jpg';
+import eventPlace from '../assets/Event Place.jpg';
+import hotelEntrance from '../assets/Hotel Entrance.jpg';
+import garden from '../assets/gall.jpg';
+import banquet from "./BanquetSection.jsx";
+
+const images = [
+  { src: dining, alt: 'Dining Area' },
+  { src: spa, alt: 'Spa' },
+  { src: eventPlace, alt: 'Event Place' },
+  { src: hotelEntrance, alt: 'Hotel Entrance' },
+  { src: garden, alt: 'Hotel Garden' },
+];
 
 export default function GallerySection() {
   return (
@@ -8,22 +21,16 @@ export default function GallerySection() {
         <h2 className="section-heading">Gallery</h2>
         <div className="section-underline"></div>
       </div>
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 className="text-4xl font-serif text-elitestay-teal mb-6">
-            Visual Tour
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Take a visual tour of our hotel, rooms, events, and surroundings. Browse our gallery to get a glimpse of the Hotel Imperia Blessings experience.
-          </p>
-        </div>
-        <div>
-          <img 
-            src={galleryImage} 
-            alt="Gallery" 
-            className="rounded-lg shadow-lg w-full h-80 object-cover"
-          />
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {images.map((img, idx) => (
+          <div key={idx} className="overflow-hidden rounded-xl shadow-lg">
+            <img
+              src={img.src}
+              alt={img.alt}
+              className="w-full h-64 object-cover hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        ))}
       </div>
     </section>
   );

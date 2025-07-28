@@ -6,6 +6,7 @@ import { auth, firestore } from '../firebase/config';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
 
 export default function BookingPage() {
   const location = useLocation();
@@ -21,6 +22,7 @@ export default function BookingPage() {
   const [editableRooms, setEditableRooms] = useState(selectedRoom?.rooms || 1);
   const [editableAdults, setEditableAdults] = useState(selectedRoom?.adults || 1);
   const [editableChildren, setEditableChildren] = useState(selectedRoom?.children || 0);
+  const [isPaying, setIsPaying] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -37,7 +39,8 @@ export default function BookingPage() {
     return null; // Or a loading/error message
   }
 
-  const onSubmit = async (data) => {
+  // Razorpay handler
+  const handleRazorpayPayment = async () => {
     if (!user) {
       alert('Please log in to complete your booking.');
       navigate('/auth');
@@ -47,28 +50,86 @@ export default function BookingPage() {
       alert('Please select both check-in and check-out dates.');
       return;
     }
+    setIsPaying(true);
     try {
-      const bookingData = {
-        userId: user.uid,
-        userEmail: user.email,
-        roomName: editableRoomType,
-        roomPrice: selectedRoomPrice,
-        checkInDate: checkIn ? checkIn.toDateString() : 'N/A',
-        checkOutDate: checkOut ? checkOut.toDateString() : 'N/A',
-        adults: editableAdults,
-        children: editableChildren,
-        rooms: editableRooms,
-        promoCode: selectedRoom?.promoCode || '',
-        ...data,
-        timestamp: new Date(),
+      // Calculate amount (remove non-numeric chars, get per room, multiply by rooms)
+      const priceStr = selectedRoomPrice.match(/\d+/g)?.join('') || '0';
+      const amount = Number(priceStr) * editableRooms;
+      if (!amount) {
+        alert('Invalid room price.');
+        setIsPaying(false);
+        return;
+      }
+      // Create order on backend
+      const { data } = await axios.post('http://localhost:5000/api/create-order', {
+        amount,
+        currency: 'INR',
+        receipt: `booking_${Date.now()}`,
+      });
+      if (!data.success) throw new Error('Failed to create order');
+      const order = data.order;
+      // Load Razorpay script if not present
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+      // Open Razorpay Checkout
+      const options = {
+        key: order.key_id || 'rzp_test_KAl8RnTvPcZJiT', // fallback to test key
+        amount: order.amount,
+        currency: order.currency,
+        name: 'EliteStay',
+        description: 'Room Booking Payment',
+        order_id: order.id,
+        handler: async function (response) {
+          // On payment success, save booking
+          try {
+            const bookingData = {
+              userId: user.uid,
+              userEmail: user.email,
+              roomName: editableRoomType,
+              roomPrice: selectedRoomPrice,
+              checkInDate: checkIn ? checkIn.toDateString() : 'N/A',
+              checkOutDate: checkOut ? checkOut.toDateString() : 'N/A',
+              adults: editableAdults,
+              children: editableChildren,
+              rooms: editableRooms,
+              promoCode: selectedRoom?.promoCode || '',
+              fullName: user.displayName || '',
+              email: user.email || '',
+              phone: '', // You may want to collect this before payment
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+              timestamp: new Date(),
+            };
+            await addDoc(collection(firestore, 'bookings'), bookingData);
+            setBookingSuccessful(true);
+            alert('Booking successful! Thank you for choosing EliteStay.');
+            reset();
+          } catch (error) {
+            console.error('Error during booking:', error);
+            alert('There was an error processing your booking. Please contact support.');
+          }
+        },
+        prefill: {
+          name: user.displayName || '',
+          email: user.email || '',
+        },
+        theme: { color: '#FF8D41' },
       };
-      await addDoc(collection(firestore, 'bookings'), bookingData);
-      setBookingSuccessful(true);
-      alert('Booking successful! Thank you for choosing EliteStay.');
-      reset();
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
-      console.error('Error during booking:', error);
-      alert('There was an error processing your booking. Please try again.');
+      console.error('Payment error:', error);
+      alert('There was an error initiating payment. Please try again.');
+    } finally {
+      setIsPaying(false);
     }
   };
 
@@ -202,101 +263,41 @@ export default function BookingPage() {
           </div>
         </div>
         <div className="text-center mt-6">
-          <button className="px-10 py-4 bg-gradient-to-r from-[#FFD700] to-[#FF8D41] text-white rounded-full shadow-xl border-0 font-semibold text-xl tracking-wide hover:scale-105 hover:from-[#FF8D41] hover:to-[#FFD700] transition-all duration-300">
-            Proceed to Payment
+          <button
+            type="button"
+            onClick={handleRazorpayPayment}
+            disabled={isPaying}
+            className="px-10 py-4 bg-gradient-to-r from-[#FFD700] to-[#FF8D41] text-white rounded-full shadow-xl border-0 font-semibold text-xl tracking-wide hover:scale-105 hover:from-[#FF8D41] hover:to-[#FFD700] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isPaying ? 'Processing...' : 'Proceed to Payment'}
           </button>
         </div>
       </div>
-      
+      {/* Guest Information Form (remove card fields and submit button) */}
       <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg border border-gray-100">
         <h3 className="text-2xl font-serif text-elitestay-teal mb-6">Guest Information</h3>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form className="space-y-6">
           <div>
             <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
             <input
               type="text"
               id="fullName"
-              {...register('fullName', { required: 'Full Name is required' })}
-              className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.fullName ? 'border-red-500' : ''}`}
+              value={user?.displayName || ''}
+              readOnly
+              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-100"
             />
-            {errors.fullName && <p className="text-red-500 text-xs italic mt-1">{errors.fullName.message}</p>}
           </div>
-
           <div>
             <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">Email</label>
             <input
               type="email"
               id="email"
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' }
-              })}
-              className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.email ? 'border-red-500' : ''}`}
+              value={user?.email || ''}
+              readOnly
+              className="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-100"
             />
-            {errors.email && <p className="text-red-500 text-xs italic mt-1">{errors.email.message}</p>}
           </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Phone Number</label>
-            <input
-              type="tel"
-              id="phone"
-              {...register('phone', { required: 'Phone number is required' })}
-              className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.phone ? 'border-red-500' : ''}`}
-            />
-            {errors.phone && <p className="text-red-500 text-xs italic mt-1">{errors.phone.message}</p>}
-          </div>
-
-          <h3 className="text-2xl font-serif text-elitestay-teal mt-10 mb-4">Payment Information</h3>
-          <div>
-            <label htmlFor="cardNumber" className="block text-gray-700 text-sm font-bold mb-2">Card Number</label>
-            <input
-              type="text"
-              id="cardNumber"
-              {...register('cardNumber', { 
-                required: 'Card number is required',
-                pattern: { value: /^\d{16}$/, message: 'Card number must be 16 digits' }
-              })}
-              className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.cardNumber ? 'border-red-500' : ''}`}
-            />
-            {errors.cardNumber && <p className="text-red-500 text-xs italic mt-1">{errors.cardNumber.message}</p>}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="expiry" className="block text-gray-700 text-sm font-bold mb-2">Expiry Date (MM/YY)</label>
-              <input
-                type="text"
-                id="expiry"
-                {...register('expiry', { 
-                  required: 'Expiry date is required',
-                  pattern: { value: /^(0[1-9]|1[0-2])\/([0-9]{2})$/, message: 'Format MM/YY' }
-                })}
-                className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.expiry ? 'border-red-500' : ''}`}
-              />
-              {errors.expiry && <p className="text-red-500 text-xs italic mt-1">{errors.expiry.message}</p>}
-            </div>
-            <div>
-              <label htmlFor="cvv" className="block text-gray-700 text-sm font-bold mb-2">CVV</label>
-              <input
-                type="text"
-                id="cvv"
-                {...register('cvv', { 
-                  required: 'CVV is required',
-                  pattern: { value: /^\d{3,4}$/, message: 'CVV must be 3 or 4 digits' }
-                })}
-                className={`shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.cvv ? 'border-red-500' : ''}`}
-              />
-              {errors.cvv && <p className="text-red-500 text-xs italic mt-1">{errors.cvv.message}</p>}
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-[#FF8D41] text-white py-3 rounded-lg shadow-lg hover:bg-orange-500 transition duration-300 transform hover:scale-105 font-semibold mt-6"
-          >
-            Confirm Booking & Pay
-          </button>
+          {/* Optionally add phone number input here if needed */}
         </form>
       </div>
     </section>
